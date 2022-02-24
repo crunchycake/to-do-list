@@ -3,9 +3,9 @@ let errorInfo
 let addBtn
 let ulList
 let newTodo //nowe zadanie
-let popup 
+let popup
 let popupInfo //tekst w popupie, jak się nie doda pusty tekst
-let todoEdit //edytowany Todo
+let todoToEdit //edytowany Todo
 let popupInput //input w popupie
 let popupAddBtn //przycisk zatwierdź w popupie
 let popupCloseBtn // przycisk anuluj w popupie
@@ -34,7 +34,8 @@ const prepareDOMEevents = () => {
 	addBtn.addEventListener('click', addNewTodo)
 	ulList.addEventListener('click', checkClick)
 	popupCloseBtn.addEventListener('click', closePopup)
-
+	popupAddBtn.addEventListener('click', changeTodoText)
+	todoInput.addEventListener('keyup', keyUpEnter)
 }
 
 // 1. tworzymy nowy element (li)
@@ -78,47 +79,52 @@ const createToolsArea = () => {
 	toolsPanel.append(completeBtn, editBtn, deleteBtn)
 }
 
-const checkClick = (e) => {
-	if(e.target.matches('.complete')) {
-
-e.target.closest('li').classList.toggle('completed');
-e.target.classList.toggle('completed')
-	} else if (e.target.matches('.edit')){
-		editTodo()
-	} else if (e.target.matches('.delete')){
-		console.log('delete');
+const checkClick = e => {
+	if (e.target.matches('.complete')) {
+		e.target.closest('li').classList.toggle('completed')
+		e.target.classList.toggle('completed')
+	} else if (e.target.matches('.edit')) {
+		editTodo(e)
+	} else if (e.target.matches('.delete')) {
+		deleteTodo(e)
 	}
-
-	
 }
 
-
-
-const editTodo = () => {
+const editTodo = e => {
+	todoToEdit = e.target.closest('li')
+	popupInput.value = todoToEdit.firstChild.textContent
+	console.log(todoToEdit.firstChild)
 	popup.style.display = 'flex'
-
 }
-
 
 const closePopup = () => {
 	popup.style.display = 'none'
+popupInfo.textContent = ''
+}
+
+const changeTodoText = () => {
+	if(popupInput.value !== '' ) {
+		todoToEdit.firstChild.textContent = popupInput.value
+		popup.style.display = 'none'
+		popupInfo.textContent = ''
+	} else {
+		popupInfo.textContent = 'Musisz podać treść zadania'
+	}
 }
 
 
+const deleteTodo = (e) => {
+	e.target.closest('li').remove()
+	const allTodos = ulList.querySelectorAll('li')
+	if(allTodos.length === 0) {
+		errorInfo.textContent = "Brak zadań do wykonania"
+	}
+}
 
-
-
-
-
-
-
-
+const keyUpEnter = (e) => {
+	if(e.key === 'Enter') {
+		addNewTodo()
+	}
+}
 
 document.addEventListener('DOMContentLoaded', main)
-
-
-
-
-
-
-
